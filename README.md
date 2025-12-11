@@ -211,6 +211,9 @@ paper-agent analyze paper1.pdf paper2.pdf --type comparison \
 
 # Analyze technology trends
 paper-agent analyze ./papers/ --type trend -o trend_report.md
+
+### the output in ./example
+paper-agent analyze paper_agent/origin/paper/DeepSeek-V3.pdf  paper_agent/origin/paper/DeepSeek-V3.2.pdf paper_agent/origin/paper/Kimi-K2.pdf  paper_agent/origin/paper/DeepSeek-R1.pdf  -t comparison -p "对比这几篇论文，把对应的模型结构优化、训练的技术路线、训练的关键技术、最终模型的结果做一个对比总结，然后总结生成一个MOE大模型的训练方案建议"
 ```
 
 ## CLI Usage
