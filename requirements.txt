@@ -1,0 +1,20 @@
+# Paper Reading Agent - 依赖列表
+
+# PDF解析
+PyMuPDF>=1.23.0  # PDF解析引擎 (fitz)
+pdfplumber>=0.10.0  # 备选PDF解析引擎
+
+# YAML配置
+PyYAML>=6.0
+
+# LLM客户端
+openai>=1.0.0  # OpenAI API客户端 (也支持兼容接口)
+anthropic>=0.18.0  # Anthropic Claude API客户端
+
+# Markdown处理 (可选，用于HTML输出)
+markdown>=3.5.0
+
+# 开发依赖 (可选)
+# pytest>=7.0.0
+# black>=23.0.0
+# mypy>=1.0.0

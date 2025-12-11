@@ -1,0 +1,266 @@
+# Paper Reading Agent Configuration
+
+# =============================================================================
+# LLM Configuration
+# =============================================================================
+# This section defines the LLM provider and model settings.
+# All values support environment variable substitution using ${VAR_NAME} syntax.
+
+llm:
+  # Provider name: openai, anthropic, deepseek, zhipu, ollama, or custom
+  provider: "openai"
+
+  # Model name - varies by provider
+  # Examples: gpt-4o, claude-sonnet-4-20250514, deepseek-chat, glm-4-plus
+  model: "DeepSeek-V3"
+
+  # API Key - REQUIRED for most providers (except ollama)
+  # Set via environment variable for security
+  api_key: "${LLM_API_KEY:}"
+
+  # API Base URL (Endpoint)
+  # Leave empty to use provider's default, or set custom endpoint
+  # Useful for: proxies, self-hosted models, Azure OpenAI, etc.
+  api_base: "https://api.modelarts-maas.com/v1"
+
+  # Model parameters
+  temperature: 0.8          # Randomness: 0.0 (deterministic) to 1.0 (creative)
+  max_tokens: 32768            # Maximum response length
+  timeout: 120              # Request timeout in seconds
+
+  # Retry configuration for failed requests
+  max_retries: 3            # Number of retry attempts
+  retry_delay: 2            # Delay between retries in seconds
+
+# =============================================================================
+# Provider Presets
+# =============================================================================
+# Pre-configured settings for common LLM providers.
+# These are used when api_base is empty and provider matches a preset.
+# You can override any preset by setting api_base in the llm section above.
+
+llm_providers:
+  # OpenAI - GPT models
+  openai:
+    api_base: "https://api.openai.com/v1"
+    api_key_env: "OPENAI_API_KEY"       # Environment variable name for API key
+    models:
+      - "gpt-4o"                         # Latest GPT-4 Omni
+      - "gpt-4o-mini"                    # Smaller, faster GPT-4 Omni
+      - "gpt-4-turbo"                    # GPT-4 Turbo
+      - "gpt-4"                          # Original GPT-4
+      - "gpt-3.5-turbo"                  # GPT-3.5
+
+  # Anthropic - Claude models
+  anthropic:
+    api_base: "https://api.anthropic.com"
+    api_key_env: "ANTHROPIC_API_KEY"
+    models:
+      - "claude-sonnet-4-20250514"       # Claude Sonnet 4
+      - "claude-opus-4-20250514"         # Claude Opus 4
+      - "claude-3-5-sonnet-20241022"     # Claude 3.5 Sonnet
+      - "claude-3-opus-20240229"         # Claude 3 Opus
+
+  # DeepSeek - DeepSeek models
+  deepseek:
+    api_base: "https://api.deepseek.com"
+    api_key_env: "DEEPSEEK_API_KEY"
+    models:
+      - "deepseek-chat"                  # DeepSeek Chat (V3)
+      - "deepseek-reasoner"              # DeepSeek Reasoner (R1)
+
+  # Zhipu AI - GLM models
+  zhipu:
+    api_base: "https://open.bigmodel.cn/api/paas/v4"
+    api_key_env: "ZHIPU_API_KEY"
+    models:
+      - "glm-4-plus"                     # GLM-4 Plus
+      - "glm-4"                          # GLM-4
+      - "glm-4-flash"                    # GLM-4 Flash (faster)
+
+  # Ollama - Local models (no API key needed)
+  ollama:
+    api_base: "http://localhost:11434/v1"
+    api_key_env: ""                      # No API key required
+    models:
+      - "llama3.1"                       # Meta Llama 3.1
+      - "llama3.1:70b"                   # Llama 3.1 70B
+      - "qwen2.5"                        # Alibaba Qwen 2.5
+      - "qwen2.5:72b"                    # Qwen 2.5 72B
+      - "deepseek-r1"                    # DeepSeek R1 distilled
+      - "mistral"                        # Mistral 7B
+
+  # Azure OpenAI - Microsoft Azure hosted OpenAI
+  azure:
+    api_base: "${AZURE_OPENAI_ENDPOINT:}"  # e.g., https://your-resource.openai.azure.com
+    api_key_env: "AZURE_OPENAI_API_KEY"
+    # Note: Azure uses deployment names, not model names
+    models:
+      - "gpt-4o"
+      - "gpt-4"
+      - "gpt-35-turbo"
+
+  # Custom/Self-hosted - OpenAI-compatible API
+  custom:
+    api_base: "${CUSTOM_LLM_ENDPOINT:}"
+    api_key_env: "CUSTOM_LLM_API_KEY"
+    models: []                           # Add your custom model names
+
+# =============================================================================
+# PDF Parser Configuration
+# =============================================================================
+pdf_parser:
+  # Parser engine: pymupdf (recommended), pdfplumber
+  engine: "pymupdf"
+
+  # Whether to extract images from PDF
+  extract_images: false
+
+  # Whether to extract tables from PDF
+  extract_tables: true
+
+  # Maximum page limit (0 = no limit)
+  max_pages: 0
+
+  # Text encoding
+  encoding: "utf-8"
+
+# =============================================================================
+# Structure Analyzer Configuration
+# =============================================================================
+structure_analyzer:
+  # Section recognition patterns (regex patterns for identifying sections)
+  section_patterns:
+    abstract:
+      - "abstract"
+    introduction:
+      - "introduction"
+      - "1 introduction"
+      - "1. introduction"
+    related_work:
+      - "related work"
+      - "background"
+      - "2 related work"
+      - "2. related work"
+    method:
+      - "method"
+      - "methodology"
+      - "approach"
+      - "3 method"
+      - "3. method"
+    experiment:
+      - "experiment"
+      - "experiments"
+      - "evaluation"
+      - "4 experiment"
+      - "4. experiment"
+    result:
+      - "result"
+      - "results"
+      - "5 result"
+      - "5. result"
+    discussion:
+      - "discussion"
+      - "6 discussion"
+      - "6. discussion"
+    conclusion:
+      - "conclusion"
+      - "conclusions"
+      - "7 conclusion"
+      - "7. conclusion"
+    references:
+      - "reference"
+      - "references"
+
+# =============================================================================
+# Content Extractor Configuration
+# =============================================================================
+content_extractor:
+  # Analysis dimensions to extract
+  dimensions:
+    - background    # Research background and motivation
+    - technology    # Core technical approach
+    - experiment    # Experimental setup and methodology
+    - result        # Results and findings
+
+  # Maximum text length per dimension (characters)
+  max_length_per_dimension: 2000
+
+  # Whether to extract keywords
+  extract_keywords: true
+
+  # Number of keywords to extract
+  num_keywords: 10
+
+# =============================================================================
+# Knowledge Aggregator Configuration
+# =============================================================================
+knowledge_aggregator:
+  # Dimensions for comparing multiple papers
+  comparison_dimensions:
+    - architecture      # Model/system architecture
+    - training_method   # Training methodology
+    - data_scale        # Dataset size and scope
+    - performance       # Performance metrics and results
+    - efficiency        # Computational efficiency
+
+  # Whether to generate technology timeline
+  generate_timeline: true
+
+  # Whether to analyze research trends
+  analyze_trends: true
+
+# =============================================================================
+# Report Generator Configuration
+# =============================================================================
+report_generator:
+  # Output format: markdown, json, html
+  output_format: "markdown"
+
+  # Output language: english, chinese, auto
+  language: "chinese"
+
+  # Whether to include original text quotes
+  include_quotes: true
+
+  # Summary detail level: brief, detailed, comprehensive
+  summary_level: "detailed"
+
+  # Report template directory
+  template_dir: "templates"
+
+# =============================================================================
+# Parallel Processing Configuration
+# =============================================================================
+parallel:
+  # Enable parallel processing for multiple papers
+  enabled: true
+
+  # Maximum number of concurrent workers
+  max_workers: 4
+
+# =============================================================================
+# Cache Configuration
+# =============================================================================
+cache:
+  # Enable caching of LLM responses
+  enabled: true
+
+  # Cache directory path
+  cache_dir: ".cache"
+
+  # Cache expiration time in hours
+  expire_hours: 24
+
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: "INFO"
+
+  # Log file path
+  file: "paper_agent.log"
+
+  # Whether to also output to console
+  console: true

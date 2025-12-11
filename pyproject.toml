@@ -1,0 +1,70 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "paper-agent"
+version = "1.0.0"
+description = "论文阅读智能代理 - 批量分析学术论文并生成报告"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Paper Agent Team"}
+]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+keywords = ["paper", "research", "llm", "analysis", "pdf"]
+
+dependencies = [
+    "PyMuPDF>=1.23.0",
+    "pdfplumber>=0.10.0",
+    "PyYAML>=6.0",
+    "openai>=1.0.0",
+    "anthropic>=0.18.0",
+    "markdown>=3.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "black>=23.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+]
+
+[project.scripts]
+paper-agent = "paper_agent.main:main"
+
+[project.urls]
+Homepage = "https://github.com/example/paper-agent"
+Documentation = "https://github.com/example/paper-agent#readme"
+Repository = "https://github.com/example/paper-agent"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["paper_agent*"]
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "W", "I", "N"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
