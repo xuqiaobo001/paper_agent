@@ -47,10 +47,12 @@ Please return results in JSON format, including:
     "innovations": ["Innovation 1", "Innovation 2", ...],
     "key_designs": ["Key design 1", "Key design 2", ...],
     "implementation_details": "Important implementation details",
-    "architecture": "Model/system architecture description"
+    "architecture": "Model/system architecture description",
+    "architecture_type": "Specify if the model is: MoE (Mixture-of-Experts), Dense, Hybrid, or Other. IMPORTANT: Be precise - check for keywords like 'MoE', 'Mixture-of-Experts', 'sparse activation', 'expert routing', 'total parameters vs activated parameters'. If a model is based on another model (e.g., 'built on DeepSeek-V3'), inherit that model's architecture type.",
+    "model_scale": "Total parameters and activated parameters (if MoE architecture). Example: '671B total, 37B activated per token'"
 }}
 
-Focus on core technical contributions.""",
+Focus on core technical contributions. Pay special attention to correctly identifying the architecture type.""",
 
         "experiment": """Analyze the experimental design of this paper and extract the following information:
 

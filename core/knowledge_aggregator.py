@@ -35,6 +35,42 @@ Please analyze from the "{dimension}" dimension and return results in JSON forma
 
 Be specific and detailed in your comparison."""
 
+    # Architecture-specific comparison prompt
+    ARCHITECTURE_COMPARISON_PROMPT = """Compare and analyze the MODEL ARCHITECTURES of the following papers:
+
+{papers_info}
+
+CRITICAL: Pay special attention to the architecture type. Check if each model is:
+- **MoE (Mixture-of-Experts)**: Keywords like "mixture-of-experts", "MoE", "sparse activation", "expert routing", "X total parameters, Y activated parameters"
+- **Dense**: Traditional transformer architecture where all parameters are activated
+- **Hybrid**: Combination of MoE and Dense layers
+- **Other**: Other architecture types
+
+If a paper mentions that a model is "based on" or "built on" another model, **inherit that base model's architecture type**.
+
+Please return results in JSON format:
+{{
+    "comparison": {{
+        "paper1_title": "Architecture description including type (MoE/Dense/Hybrid/Other) and scale",
+        "paper2_title": "Architecture description including type (MoE/Dense/Hybrid/Other) and scale",
+        ...
+    }},
+    "similarities": ["Similarity 1", "Similarity 2", ...],
+    "differences": ["Difference 1", "Difference 2", ...],
+    "analysis": "Overall analysis focusing on architectural differences"
+}}
+
+Example response for comparison:
+{{
+    "comparison": {{
+        "DeepSeek-V3": "MoE architecture with 671B total parameters, 37B activated per token",
+        "DeepSeek-V3.2": "MoE architecture (inherited from DeepSeek-V3), adds DeepSeek Sparse Attention"
+    }},
+    ...
+}}
+
+Be precise and accurate. Double-check architecture types."""
+
     # Timeline construction prompt
     TIMELINE_PROMPT = """Construct a technology development timeline based on the following papers:
 
@@ -219,12 +255,22 @@ Please provide a comprehensive analysis based on the user's requirement. Output 
         info_parts = []
 
         for i, paper in enumerate(papers, 1):
+            # Extract architecture info if available
+            arch_info = ""
+            if paper.technology:
+                if hasattr(paper.technology, 'architecture') and paper.technology.architecture:
+                    arch_info = f"\nArchitecture: {paper.technology.architecture}"
+                if hasattr(paper.technology, 'architecture_type'):
+                    arch_info += f"\nArchitecture Type: {paper.technology.architecture_type}"
+                if hasattr(paper.technology, 'model_scale'):
+                    arch_info += f"\nModel Scale: {paper.technology.model_scale}"
+
             info = f"""Paper {i}: {paper.title}
 Authors: {', '.join(paper.authors) if paper.authors else 'Unknown'}
 Abstract: {paper.paper.abstract[:500]}...
 
 Research Background: {paper.background.motivation if paper.background else 'N/A'}
-Core Method: {paper.technology.method_overview if paper.technology else 'N/A'}
+Core Method: {paper.technology.method_overview if paper.technology else 'N/A'}{arch_info}
 Innovations: {', '.join(paper.technology.innovations) if paper.technology and paper.technology.innovations else 'N/A'}
 Main Results: {paper.result.main_results if paper.result else 'N/A'}
 Keywords: {', '.join(paper.keywords) if paper.keywords else 'N/A'}
@@ -240,10 +286,16 @@ Keywords: {', '.join(paper.keywords) if paper.keywords else 'N/A'}
         all_differences = []
 
         for dimension in self.aggregator_config.comparison_dimensions:
-            prompt = self.COMPARISON_PROMPT.format(
-                papers_info=papers_info,
-                dimension=dimension,
-            )
+            # Use architecture-specific prompt for architecture dimension
+            if dimension.lower() == "architecture":
+                prompt = self.ARCHITECTURE_COMPARISON_PROMPT.format(
+                    papers_info=papers_info,
+                )
+            else:
+                prompt = self.COMPARISON_PROMPT.format(
+                    papers_info=papers_info,
+                    dimension=dimension,
+                )
 
             try:
                 result = self.llm_helper.extract_json(prompt)

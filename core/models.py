@@ -92,6 +92,8 @@ class TechnologyAnalysis:
     key_designs: List[str] = field(default_factory=list)
     implementation_details: str = ""
     architecture: str = ""
+    architecture_type: str = ""  # MoE, Dense, Hybrid, Other
+    model_scale: str = ""  # e.g., "671B total, 37B activated"
 
 
 @dataclass
