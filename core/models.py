@@ -94,6 +94,8 @@ class TechnologyAnalysis:
     architecture: str = ""
     architecture_type: str = ""  # MoE, Dense, Hybrid, Other
     model_scale: str = ""  # e.g., "671B total, 37B activated"
+    model_type: str = ""  # LLM, Multimodal, Vision, Audio, etc.
+    application_scenarios: List[str] = field(default_factory=list)  # e.g., ["dialogue", "image understanding", "code generation"]
 
 
 @dataclass

@@ -263,6 +263,15 @@ class ReportGenerator:
         # Technical Method
         if paper.technology:
             sections.append(f"## {t['technical_method']}\n")
+
+            # Model type and application scenarios (prominent display)
+            if hasattr(paper.technology, 'model_type') and paper.technology.model_type:
+                sections.append(f"**Model Type:** {paper.technology.model_type}\n")
+            if hasattr(paper.technology, 'application_scenarios') and paper.technology.application_scenarios:
+                sections.append(f"**Application Scenarios:** {', '.join(paper.technology.application_scenarios)}\n")
+            if paper.technology.model_type or (hasattr(paper.technology, 'application_scenarios') and paper.technology.application_scenarios):
+                sections.append("")
+
             if paper.technology.method_overview:
                 sections.append(f"**{t['method_overview']}:** {paper.technology.method_overview}\n")
             if paper.technology.innovations:
@@ -371,6 +380,16 @@ class ReportGenerator:
         sections.append(f"## {t['individual_paper_summaries']}\n")
         for paper in papers:
             sections.append(f"### {paper.title}\n")
+
+            # Display model type and application scenarios prominently
+            if paper.technology:
+                if hasattr(paper.technology, 'model_type') and paper.technology.model_type:
+                    sections.append(f"**Model Type:** {paper.technology.model_type}  ")
+                if hasattr(paper.technology, 'application_scenarios') and paper.technology.application_scenarios:
+                    sections.append(f"**Application Scenarios:** {', '.join(paper.technology.application_scenarios)}  ")
+                if paper.technology.model_type or (hasattr(paper.technology, 'application_scenarios') and paper.technology.application_scenarios):
+                    sections.append("")
+
             sections.append(paper.summary or paper.paper.abstract[:500] + "...")
             sections.append("")
 

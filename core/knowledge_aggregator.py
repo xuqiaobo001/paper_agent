@@ -60,13 +60,16 @@ Please return results in JSON format:
     "analysis": "Overall analysis focusing on architectural differences"
 }}
 
-Example response for comparison:
+Example response format:
 {{
     "comparison": {{
-        "DeepSeek-V3": "MoE architecture with 671B total parameters, 37B activated per token",
-        "DeepSeek-V3.2": "MoE architecture (inherited from DeepSeek-V3), adds DeepSeek Sparse Attention"
+        "Paper A": "MoE architecture with XXX total parameters, YY activated per token",
+        "Paper B": "Dense architecture with ZZ parameters",
+        "Paper C": "MoE architecture (inherited from Paper A), adds custom attention mechanism"
     }},
-    ...
+    "similarities": ["All use transformer-based architectures", ...],
+    "differences": ["Paper A uses MoE while Paper B uses dense architecture", ...],
+    "analysis": "Paper A and C leverage sparse MoE for efficiency, while Paper B opts for dense design for simplicity..."
 }}
 
 Be precise and accurate. Double-check architecture types."""
@@ -128,11 +131,19 @@ Comparison results:
 Trend analysis:
 {trends_summary}
 
+CRITICAL INSTRUCTIONS:
+1. **DO NOT merge or confuse different models** - even if they have similar names (e.g., Model-VL vs Model-LLM are DIFFERENT models)
+2. **Clearly distinguish model types** - LLM vs Multimodal vs Vision vs Audio, etc.
+3. **Highlight application scenarios** - what each model is designed for
+4. **Maintain individual paper identity** - do not group papers together solely based on similar names or organizations
+
 Please generate a comprehensive summary (300-500 words) in {language}, including:
-1. Main research theme of this paper collection
-2. Key technical developments and evolution
+1. Overview of the papers (with clear identification of each model's type and purpose)
+2. Key technical developments (organized by model type or application if applicable)
 3. Current research hotspots and challenges
 4. Future research directions
+
+When discussing multiple papers, use clear identifiers (paper title or specific model name) to avoid confusion.
 
 Output the summary directly, no JSON format needed."""
 
@@ -144,7 +155,16 @@ User Requirement: {custom_prompt}
 Papers Information:
 {papers_info}
 
-Please provide a comprehensive analysis based on the user's requirement. Output in {language}, be detailed and specific."""
+CRITICAL INSTRUCTIONS:
+1. **DO NOT merge or confuse different models** - even if they have similar names (e.g., Model-VL vs Model-LLM are DIFFERENT models)
+2. **Clearly distinguish model types** - LLM vs Multimodal vs Vision vs Audio, etc.
+3. **Highlight application scenarios** - what each model is designed for
+4. **Maintain individual paper identity** - analyze each paper separately unless the user explicitly requests comparison
+5. **Use specific model names** - refer to papers by their exact titles or model names to avoid confusion
+
+Please provide a comprehensive analysis based on the user's requirement. Output in {language}, be detailed and specific.
+
+When discussing papers with similar names, explicitly state their differences (e.g., "Model-VL is a multimodal vision-language model, while Model-LLM is a text-only language model")."""
 
     def __init__(self, config: Optional[Config] = None):
         self.config = config or get_config()
@@ -260,10 +280,14 @@ Please provide a comprehensive analysis based on the user's requirement. Output 
             if paper.technology:
                 if hasattr(paper.technology, 'architecture') and paper.technology.architecture:
                     arch_info = f"\nArchitecture: {paper.technology.architecture}"
-                if hasattr(paper.technology, 'architecture_type'):
+                if hasattr(paper.technology, 'architecture_type') and paper.technology.architecture_type:
                     arch_info += f"\nArchitecture Type: {paper.technology.architecture_type}"
-                if hasattr(paper.technology, 'model_scale'):
+                if hasattr(paper.technology, 'model_scale') and paper.technology.model_scale:
                     arch_info += f"\nModel Scale: {paper.technology.model_scale}"
+                if hasattr(paper.technology, 'model_type') and paper.technology.model_type:
+                    arch_info += f"\n**Model Type**: {paper.technology.model_type}"
+                if hasattr(paper.technology, 'application_scenarios') and paper.technology.application_scenarios:
+                    arch_info += f"\n**Application Scenarios**: {', '.join(paper.technology.application_scenarios)}"
 
             info = f"""Paper {i}: {paper.title}
 Authors: {', '.join(paper.authors) if paper.authors else 'Unknown'}

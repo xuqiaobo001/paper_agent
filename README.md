@@ -4,11 +4,11 @@ An intelligent paper analysis tool powered by LLM. It can automatically parse ac
 
 ## Features
 
-- **🎯 Custom Analysis Prompts** ⭐ NEW: Define your own analysis requirements with natural language (e.g., "compare technical approaches", "analyze data processing methods")
-- **📊 Key Resource Extraction** ⭐ NEW: Automatically identifies and extracts key figures, tables, and equations from papers
+- **🎯 Custom Analysis Prompts**: Define your own analysis requirements with natural language (e.g., "compare technical approaches", "analyze data processing methods")
+- **📊 Key Resource Extraction**: Automatically identifies and extracts key figures, tables, and equations from papers
   - Intelligent selection of most important visual elements using LLM
   - Saves figures as images in assets directory
-  - **🖼️ Smart Table Screenshot** ⭐ ENHANCED: Automatically captures complete tables as high-quality images when text extraction fails
+  - Smart table screenshot: Automatically captures complete tables as high-quality images when text extraction fails
   - Embeds key tables and equations in the report
   - All resources referenced in markdown format
 - **📝 Improved Title Extraction**: Enhanced paper title detection with better pattern matching for various PDF layouts
@@ -21,26 +21,7 @@ An intelligent paper analysis tool powered by LLM. It can automatically parse ac
 
 > **⚠️ Important**: Please review [Limitations and Constraints](#limitations-and-constraints) before use to understand supported scenarios and potential issues.
 
-## 🆕 Recent Updates
-
-### v1.1.0 - Enhanced Table Handling & Bug Fixes
-
-**🖼️ Smart Table Screenshot**
-- **Automatic fallback to screenshots**: When text extraction fails to capture complete table data, the tool now automatically captures high-quality screenshots (200 DPI)
-- **Intelligent boundary detection**: Analyzes text positions to find the complete extent of tables, ensuring all rows are captured
-- **Seamless integration**: Tables are displayed as images in reports when necessary, preserving exact visual appearance
-
-**🐛 Bug Fixes**
-- **Fixed title extraction bug**: Resolved "Untitled" issue caused by overly aggressive pattern matching
-- **Fixed max_tokens configuration**: Corrected default value to respect API limits (32768 instead of 655536)
-- **Improved table formatting**: Tables that can be extracted as text are now properly formatted as Markdown tables
-
-**Why These Updates Matter:**
-- Many academic papers (especially from arXiv) use complex table layouts that traditional text extraction cannot handle
-- The tool now ensures you never miss important tabular data in your analysis
-- More reliable paper metadata extraction means better organized reports
-
-## 🎯 What's New: Custom Analysis Prompts
+## Custom Analysis Prompts
 
 The custom analysis feature allows you to define your own analysis requirements using natural language, giving you precise control over what aspects of the papers you want to focus on.
 
@@ -76,9 +57,9 @@ paper-agent analyze paper1.pdf paper2.pdf -t comparison \
 | Practical Assessment | "assess practical applicability for production deployment" |
 | Innovation Analysis | "identify the most significant innovations and their potential impact" |
 
-## 📊 Key Resource Extraction
+## Key Resource Extraction
 
-The tool now automatically identifies and extracts the most important visual elements from papers:
+The tool automatically identifies and extracts the most important visual elements from papers:
 
 ### How It Works
 
@@ -97,7 +78,7 @@ The tool now automatically identifies and extracts the most important visual ele
    - Referenced in markdown with proper paths
    - Displayed in a "Key Resources" section at the end of the report
 
-### 🖼️ Smart Table Screenshot (Enhanced)
+### Smart Table Screenshot
 
 When PDF table extraction fails to capture complete table data (common with complex layouts), the tool **automatically captures high-quality screenshots**:
 
@@ -111,16 +92,6 @@ When PDF table extraction fails to capture complete table data (common with comp
 - Many academic papers use complex table layouts that resist text extraction
 - Text-based tables may have merged cells, multi-line headers, or special formatting
 - Screenshots preserve the original visual presentation exactly as published
-
-**Example Output:**
-
-```markdown
-#### Key Tables
-
-**Table 3: Performance Comparison**
-
-![Table 3: Performance Comparison](report_assets/table_paper_1.png)
-```
 
 **Note:** Tables that extract successfully are still rendered as Markdown tables for better searchability.
 
@@ -198,7 +169,7 @@ paper-agent analyze paper.pdf --type single -o summary.md
 # Compare multiple papers (default mode)
 paper-agent analyze paper1.pdf paper2.pdf --type comparison -o compare.md
 
-# 🎯 NEW: Custom analysis with your own requirements
+# Custom analysis with your own requirements
 paper-agent analyze paper1.pdf paper2.pdf --type comparison \
   --prompt "compare technical approaches and identify key differences"
 
@@ -211,9 +182,6 @@ paper-agent analyze paper1.pdf paper2.pdf --type comparison \
 
 # Analyze technology trends
 paper-agent analyze ./papers/ --type trend -o trend_report.md
-
-### the output in ./example
-paper-agent analyze paper_agent/origin/paper/DeepSeek-V3.pdf  paper_agent/origin/paper/DeepSeek-V3.2.pdf paper_agent/origin/paper/Kimi-K2.pdf  paper_agent/origin/paper/DeepSeek-R1.pdf  -t comparison -p "对比这几篇论文，把对应的模型结构优化、训练的技术路线、训练的关键技术、最终模型的结果做一个对比总结，然后总结生成一个MOE大模型的训练方案建议"
 ```
 
 ## CLI Usage
@@ -228,7 +196,7 @@ Options:
   -t, --type TYPE          Report type: single/comparison/trend (default: single)
   -o, --output PATH        Output file path
   --title TEXT             Report title
-  -p, --prompt TEXT        🎯 Custom analysis requirement (e.g., "analyze technical differences")
+  -p, --prompt TEXT        Custom analysis requirement (e.g., "analyze technical differences")
   -c, --config PATH        Configuration file path
   -f, --format FORMAT      Output format: markdown/json/html (default: markdown)
   -v, --verbose            Show verbose output
@@ -243,7 +211,7 @@ paper-agent analyze paper.pdf
 # Compare two papers (default mode - structured comparison matrix)
 paper-agent analyze paper1.pdf paper2.pdf -t comparison
 
-# 🎯 Custom analysis examples
+# Custom analysis examples
 # Focus on specific aspects with natural language prompts
 paper-agent analyze paper1.pdf paper2.pdf -t comparison \
   -p "compare the training methods and identify which is more efficient"
@@ -279,7 +247,7 @@ report = agent.run(
     output_path="summary.md"
 )
 
-# 🎯 NEW: Custom analysis with your own requirements
+# Custom analysis with your own requirements
 report = agent.run(
     input_path=["paper1.pdf", "paper2.pdf"],
     report_type="comparison",
@@ -414,7 +382,7 @@ Horizontally compares multiple papers with structured analysis:
 - Common themes and key differences
 - Individual paper summaries
 
-#### 🎯 Custom Analysis Mode (with `-p/--prompt`)
+#### Custom Analysis Mode (with `-p/--prompt`)
 Provides focused analysis based on your specific requirements:
 - **Flexible focus**: Analyze any aspect you care about (e.g., "compare data preprocessing approaches")
 - **Targeted insights**: Get deep analysis on specific dimensions instead of general comparison
@@ -454,7 +422,7 @@ Before using paper_agent, please be aware of the following limitations and const
 - **Author extraction**: Limited to PDF metadata; text-based extraction not implemented
 - **Abstract extraction**: Relies on "Abstract" section header; may miss abstracts without clear markers
 - **Section detection**: Pattern-based; may miss non-standard section naming conventions
-- **Table extraction**: ✅ **IMPROVED** - Automatically captures tables as images when text extraction fails; ensures complete visual fidelity
+- **Table extraction**: Automatically captures tables as images when text extraction fails; ensures complete visual fidelity
 - **Figure captions**: Basic placeholder only; not truly extracted from PDF content
 - **References**: Only parses numbered format `[1]` or `1.`; other citation styles may fail
 
@@ -574,18 +542,18 @@ Before using paper_agent, please be aware of the following limitations and const
 
 ```
 paper_agent/
-├── core/                       # Core modules (~3900 lines)
-│   ├── config.py               # Configuration management (342 lines)
-│   ├── models.py               # Data models (187 lines)
-│   ├── pdf_parser.py           # PDF parser with smart table screenshot (523 lines)
-│   ├── structure_analyzer.py   # Structure analyzer (236 lines)
-│   ├── llm_client.py           # LLM client (285 lines)
-│   ├── content_extractor.py    # Content extractor with resource identification (493 lines)
-│   ├── knowledge_aggregator.py # Knowledge aggregator (391 lines)
-│   ├── report_generator.py     # Report generator with resource embedding (614 lines)
-│   └── resource_manager.py     # Resource manager for figures/tables/equations (259 lines)
-├── agent.py                    # Main agent class (234 lines)
-├── main.py                     # CLI entry point (274 lines)
+├── core/                       # Core modules
+│   ├── config.py               # Configuration management
+│   ├── models.py               # Data models
+│   ├── pdf_parser.py           # PDF parser with smart table screenshot
+│   ├── structure_analyzer.py   # Structure analyzer
+│   ├── llm_client.py           # LLM client
+│   ├── content_extractor.py    # Content extractor with resource identification
+│   ├── knowledge_aggregator.py # Knowledge aggregator
+│   ├── report_generator.py     # Report generator with resource embedding
+│   └── resource_manager.py     # Resource manager for figures/tables/equations
+├── agent.py                    # Main agent class
+├── main.py                     # CLI entry point
 ├── config.yaml                 # Default configuration
 ├── requirements.txt            # Dependencies
 └── README.md                   # This file

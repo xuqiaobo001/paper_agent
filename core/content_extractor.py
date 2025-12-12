@@ -48,11 +48,16 @@ Please return results in JSON format, including:
     "key_designs": ["Key design 1", "Key design 2", ...],
     "implementation_details": "Important implementation details",
     "architecture": "Model/system architecture description",
-    "architecture_type": "Specify if the model is: MoE (Mixture-of-Experts), Dense, Hybrid, or Other. IMPORTANT: Be precise - check for keywords like 'MoE', 'Mixture-of-Experts', 'sparse activation', 'expert routing', 'total parameters vs activated parameters'. If a model is based on another model (e.g., 'built on DeepSeek-V3'), inherit that model's architecture type.",
-    "model_scale": "Total parameters and activated parameters (if MoE architecture). Example: '671B total, 37B activated per token'"
+    "architecture_type": "Specify if the model is: MoE (Mixture-of-Experts), Dense, Hybrid, or Other. IMPORTANT: Be precise - check for keywords like 'MoE', 'Mixture-of-Experts', 'sparse activation', 'expert routing', 'total parameters vs activated parameters'. If a model is based on another model (e.g., 'built on Model-X'), inherit that model's architecture type.",
+    "model_scale": "Total parameters and activated parameters (if MoE architecture). Example format: 'XXB total, YYB activated per token' or 'ZZB parameters' for dense models",
+    "model_type": "CRITICAL - Specify the PRIMARY model type. Choose ONE from: LLM (text-only language model), Multimodal (handles multiple modalities like vision+language, audio+text), Vision (image/video-focused), Audio (speech/sound-focused), Code (specialized for code), Reasoning (specialized for reasoning tasks), or Other. IMPORTANT: Do NOT confuse models from the same series - check the paper content carefully. For example, Model-VL is Multimodal while Model-LLM is LLM.",
+    "application_scenarios": ["Primary application 1", "Primary application 2", ...] - List the MAIN intended use cases. Examples: "text generation", "image understanding", "visual question answering", "code generation", "mathematical reasoning", "multimodal dialogue", "video analysis", etc.
 }}
 
-Focus on core technical contributions. Pay special attention to correctly identifying the architecture type.""",
+Focus on core technical contributions. Pay special attention to:
+1. Correctly identifying the architecture type
+2. DISTINGUISHING the model type - especially between LLM and Multimodal models
+3. Identifying the PRIMARY application scenarios based on the paper's focus""",
 
         "experiment": """Analyze the experimental design of this paper and extract the following information:
 
@@ -230,11 +235,44 @@ Include: main problem, proposed method, and key results."""
         contents["background"] = "\n\n".join(background_parts)
 
         # Technology: method + architecture parts
+        # ENHANCED: Smart sampling to capture architecture info
         tech_parts = []
         if "method" in sections:
-            tech_parts.append(sections["method"])
+            method_text = sections["method"]
+
+            # Take first part (overview)
+            tech_parts.append(method_text[:1500])
+
+            # Search for architecture-critical paragraphs using GENERIC keywords
+            arch_keywords = [
+                # Model initialization/heritage keywords
+                'base model', 'built on', 'based on', 'starting from',
+                'initialized from', 'inherit', 'extend',
+                # Architecture type keywords
+                'architecture', 'moe', 'mixture-of-experts', 'mixture of experts',
+                'dense', 'sparse', 'transformer', 'attention',
+                # Model scale keywords
+                'parameters', 'param', 'billion', 'million',
+                'total parameters', 'activated parameters',
+                # Expert-related keywords
+                'expert', 'routing', 'gating', 'load balancing'
+            ]
+
+            # Split into paragraphs and find architecture-related ones
+            paragraphs = method_text.split('\n\n')
+            for para in paragraphs:
+                para_lower = para.lower()
+                # Check if paragraph contains architecture-related information
+                if any(keyword in para_lower for keyword in arch_keywords):
+                    # Found architecture-related paragraph
+                    if para not in tech_parts[0]:  # Avoid duplication
+                        tech_parts.append(para[:500])  # Add up to 500 chars of this paragraph
+                        if sum(len(p) for p in tech_parts) > 2500:  # Soft limit
+                            break
         elif "abstract" in sections:
             tech_parts.append(sections.get("abstract", paper.abstract))
+
+        # Combine and limit total length
         contents["technology"] = "\n\n".join(tech_parts)[:self.extractor_config.max_length_per_dimension]
 
         # Experiment: experiment section
