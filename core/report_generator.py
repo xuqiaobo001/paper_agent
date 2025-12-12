@@ -556,6 +556,17 @@ class ReportGenerator:
         Returns:
             Modified report content with resource references
         """
+        # First check if any paper has resources
+        has_any_resources = False
+        for paper in papers:
+            if paper.key_figures or paper.key_tables or paper.key_equations:
+                has_any_resources = True
+                break
+
+        # If no resources at all, don't add the section
+        if not has_any_resources:
+            return content
+
         # Add a resources section at the end
         resources_section = "\n\n---\n\n## Key Resources\n\n"
 

@@ -114,7 +114,7 @@ pdf_parser:
   engine: "pymupdf"
 
   # Whether to extract images from PDF
-  extract_images: false
+  extract_images: true
 
   # Whether to extract tables from PDF
   extract_tables: true
