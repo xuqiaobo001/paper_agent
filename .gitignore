@@ -29,6 +29,7 @@ output/
 *.md
 !README.md
 !INSTALL.md
+!INSTALL_SCRIPTS.md
 
 # 配置文件（包含敏感信息）
 config.local.yaml
